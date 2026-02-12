@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SyncUp</title>
+</head>
+<body>
+
+    <nav>
+        <a href="{% url 'workspace-dashboard' workspace.slug %}">
+            Dashboard
+        </a>
+
+        <a href="{% url 'task-list' workspace.slug %}"> 
+            Tasks
+        </a>
+    </nav>
+
+    <hr>
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

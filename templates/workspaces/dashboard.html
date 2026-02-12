@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ workspace.name }} Dashboard</h2>
+
+<h3>Projects</h3>
+{% comment %} <ul>
+    {% for project in projects %}
+        <li>{{ project.name }}</li>
+    {% empty %}
+        <li>No projects yet</li>
+    {% endfor %}
+</ul>
+
+<h3>Tasks</h3>
+<ul>
+    {% for task in tasks %}
+        <li>
+            <a href="{% url 'task-detail' workspace.slug task.id %}">
+                {{ task.title }}
+            </a>
+        </li>
+    {% empty %}
+        <li>No tasks yet</li>
+    {% endfor %}
+</ul> {% endcomment %}
+
+{% endblock %}
