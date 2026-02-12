@@ -7,6 +7,12 @@ class Workspace(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="workspaces",
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

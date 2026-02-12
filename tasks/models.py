@@ -15,3 +15,6 @@ class Task(models.Model):
         on_delete=models.SET_NULL
     )
     objects = TaskManager()
+
+    def __str__(self):
+        return self.title

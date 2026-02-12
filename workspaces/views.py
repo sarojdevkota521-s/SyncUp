@@ -69,10 +69,11 @@ def project_create(request, workspace_slug):
         if form.is_valid():
             task = form.save(commit=False)
             task.workspace = workspace
+            
             task.save()
             return redirect("project-list", workspace_slug=workspace.slug)
     else:
-        form = ProjectForm(workspace=workspace)
+        form = ProjectForm()
 
     return render(
         request,

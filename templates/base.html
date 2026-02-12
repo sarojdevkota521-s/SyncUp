@@ -20,7 +20,21 @@
     <a href="{% url 'workspace-dashboard' workspace.slug %}">Dashboard</a>
     <a href="{% url 'project-list' workspace.slug %}">Projects</a>
     <a href="{% url 'task-list' workspace.slug %}">Tasks</a>
+
+    {% if user.is_authenticated %}
+    Welcome {{ user.username }} |
+    <a href="{% url 'logout' %}">Logout</a>
+{% else %}
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'register' %}">Register</a>
+{% endif %}
+
 </nav>
+{% endif %}
+{% if messages %}
+{% for message in messages %}
+<li>{{message }}</li>
+{% endfor %}
 {% endif %}
 
 <div class="container">
