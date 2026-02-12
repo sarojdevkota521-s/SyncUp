@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ task.title }}</h2>
+
+<p><strong>Project:</strong> {{ task.project.name }}</p>
+
+<p>
+    <strong>Assigned To:</strong>
+    {% if task.assigned_to %}
+        {{ task.assigned_to.username }}
+    {% else %}
+        Unassigned
+    {% endif %}
+</p>
+
+<a class="btn" href="{% url 'task-list' workspace.slug %}">
+    Back to Tasks
+</a>
+
+{% endblock %}

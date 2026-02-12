@@ -2,23 +2,31 @@
 <html>
 <head>
     <title>SyncUp</title>
+    <style>
+        body { font-family: Arial; margin: 40px; background: #f9f9f9; }
+        nav { margin-bottom: 20px; }
+        nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+        .container { background: white; padding: 20px; border-radius: 8px; }
+        .card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 6px; }
+        .btn { padding: 6px 12px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+        .danger { background: #dc3545; }
+    </style>
 </head>
 <body>
 
-    <nav>
-        <a href="{% url 'workspace-dashboard' workspace.slug %}">
-            Dashboard
-        </a>
+{% if workspace %}
+<nav>
+    <strong>{{ workspace.name }}</strong> |
+    <a href="{% url 'workspace-dashboard' workspace.slug %}">Dashboard</a>
+    <a href="{% url 'project-list' workspace.slug %}">Projects</a>
+    <a href="{% url 'task-list' workspace.slug %}">Tasks</a>
+</nav>
+{% endif %}
 
-        <a href="{% url 'task-list' workspace.slug %}"> 
-            Tasks
-        </a>
-    </nav>
-
-    <hr>
-
+<div class="container">
     {% block content %}
     {% endblock %}
+</div>
 
 </body>
 </html>

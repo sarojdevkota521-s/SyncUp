@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Projects</h2>
+
+<a class="btn" href="{% url 'project-create' workspace.slug %}">
+    + Create Project
+</a>
+
+<br><br>
+
+{% for project in projects %}
+    <div class="card">
+        <h3>{{ project.name }}</h3>
+        <p>Tasks: {{ project.task_set.count }}</p>
+    </div>
+{% empty %}
+    <p>No projects found.</p>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Tasks</h2>
+
+<a class="btn" href="{% url 'task-create' workspace.slug %}">
+    + Create Task
+</a>
+
+<br><br>
+
+{% for task in tasks %}
+    <div class="card">
+        <h3>
+            <a href="{% url 'task-detail' workspace.slug task.id %}">
+                {{ task.title }}
+            </a>
+        </h3>
+
+        <p>Project: {{ task.project.name }}</p>
+
+        <p>
+            Assigned to:
+            {% if task.assigned_to %}
+                {{ task.assigned_to.username }}
+            {% else %}
+                Unassigned
+            {% endif %}
+        </p>
+    </div>
+{% empty %}
+    <p>No tasks found.</p>
+{% endfor %}
+
+{% endblock %}

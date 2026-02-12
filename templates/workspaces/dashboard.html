@@ -5,7 +5,7 @@
 <h2>{{ workspace.name }} Dashboard</h2>
 
 <h3>Projects</h3>
-{% comment %} <ul>
+<ul>
     {% for project in projects %}
         <li>{{ project.name }}</li>
     {% empty %}
@@ -13,7 +13,7 @@
     {% endfor %}
 </ul>
 
-<h3>Tasks</h3>
+<h3>Recent Tasks</h3>
 <ul>
     {% for task in tasks %}
         <li>
@@ -24,6 +24,6 @@
     {% empty %}
         <li>No tasks yet</li>
     {% endfor %}
-</ul> {% endcomment %}
+</ul>
 
 {% endblock %}

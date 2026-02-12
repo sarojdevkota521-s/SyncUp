@@ -9,7 +9,7 @@ from .forms import TaskForm
 
 # Create your views here.
 
-@login_required
+
 def home(request):
     membership = WorkspaceMember.objects.filter(
         user=request.user
@@ -59,6 +59,30 @@ def check_workspace_membership(user, workspace):
         user=user,
         workspace=workspace
     ).exists()
+from projects.forms import ProjectForm
+@login_required
+def project_create(request, workspace_slug):
+    workspace = request.workspace
+
+    if request.method == "POST":
+        form = ProjectForm(request.POST, workspace=workspace)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.workspace = workspace
+            task.save()
+            return redirect("project-list", workspace_slug=workspace.slug)
+    else:
+        form = ProjectForm(workspace=workspace)
+
+    return render(
+        request,
+        "projects/project_form.html",
+        {
+            "workspace": workspace,
+            "form": form
+        }
+    )
+
 
 @login_required
 def task_list(request, workspace_slug):
@@ -92,7 +116,7 @@ def task_detail(request, workspace_slug, pk):
 
     return render(
         request,
-        "tasks/task_detail.html",
+        "tasks/task_details.html",
         {
             "workspace": workspace,
             "task": task
