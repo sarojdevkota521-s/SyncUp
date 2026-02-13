@@ -10,4 +10,14 @@
     <a class="btn" href="{% url 'login' %}">Login</a>
 {% endif %}
 
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">submit</button>
+</form>
+
+{% if workspace %}
+ <a class="btn" href="{% url 'workspace-dashboard' workspace_slug %}">Go to Dashboard</a>
+ {%endif %}
 {% endblock %}

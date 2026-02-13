@@ -22,3 +22,8 @@ class TaskForm(forms.ModelForm):
             self.fields["assigned_to"].queryset = User.objects.filter(
                 workspacemember__workspace=workspace
             )
+from .models import WorkspaceMember
+class WorkspaceMemberForm(forms.ModelForm):
+    class Meta:
+        model = WorkspaceMember
+        fields = [ "role"]

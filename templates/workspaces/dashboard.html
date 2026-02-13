@@ -3,7 +3,7 @@
 {% block content %}
 
 <h2>{{ workspace.name }} Dashboard</h2>
-
+{% if is_owner %} 
 <h3>Projects</h3>
 <ul>
     {% for project in projects %}
@@ -25,5 +25,8 @@
         <li>No tasks yet</li>
     {% endfor %}
 </ul>
+{% else %}
+access denied
+{% endif %}
 
 {% endblock %}

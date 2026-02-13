@@ -5,12 +5,14 @@ from tasks.models import Task
 from django.http import HttpResponseForbidden
 from workspaces.models import WorkspaceMember
 
-from .forms import TaskForm
+from .forms import TaskForm , WorkspaceMemberForm
+from .models import Workspace
 
 # Create your views here.
 
 
 def home(request):
+
     membership = WorkspaceMember.objects.filter(
         user=request.user
     ).first()
@@ -21,19 +23,42 @@ def home(request):
             workspace_slug=membership.workspace.slug
         )
 
-    return render(request, "home.html")
+    workspace = request.workspace 
+    # Workspace.objects.filter(owner=request.user)
 
+    if request.method == "POST":
+        form = WorkspaceMemberForm(request.POST)
+
+        if form.is_valid():
+            member = form.save(commit=False)
+            member.workspace = workspace
+            member.user = request.user
+            member.save()
+
+            return redirect(
+                "workspace-dashboard",
+                workspace_slug=workspace.slug
+            )
+    else:
+        form = WorkspaceMemberForm()
+
+    return render(request, "home.html", {
+        "workspace": workspace,
+        "form": form
+    })
 @login_required
 def workspace_dashboard(request, workspace_slug):
     workspace = request.workspace
 
     projects = Project.objects.filter(workspace=workspace)
     tasks = Task.objects.for_workspace(workspace)
+    is_owner = workspace.owner == request.user
 
     context = {
         "workspace": workspace,
         "projects": projects,
         "tasks": tasks,
+        "is_owner":is_owner
     }
 
     return render(request, "workspaces/dashboard.html", context)

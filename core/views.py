@@ -36,10 +36,24 @@ def register_view(request):
 def login_view(request):
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
+
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+
+            workspace = Workspace.objects.filter(
+                members=user
+            ).first()
             return redirect("/") 
+
+            # if workspace:
+            #     return redirect(
+            #         "workspace-dashboard",
+            #         workspace_slug=workspace.slug
+            #     )
+            # else:
+            #     return redirect("register") 
+
     else:
         form = AuthenticationForm()
 
