@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+
 from core.views import register_view, login_view, logout_view
 
 urlpatterns = [
@@ -26,4 +27,9 @@ urlpatterns = [
     path("", include('workspaces.urls')),
     
 ]
+from django.shortcuts import render
+def custom_403(request, exception):
+    return render(request, "403.html", status=403)
 
+
+handler403 = "Multi_Tinant_Saas.urls.custom_403"

@@ -28,12 +28,13 @@ def register_view(request):
 
             workspace.members.add(user)
 
-            return redirect("workspace-dashboard", workspace_slug=workspace.slug)
+            return redirect("login")
     else:
         form = RegisterForm()
 
     return render(request, "auth/register.html", {"form": form})
 def login_view(request):
+    
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
 
@@ -42,17 +43,16 @@ def login_view(request):
             login(request, user)
 
             workspace = Workspace.objects.filter(
-                members=user
+                owner=request.user
             ).first()
-            return redirect("/") 
-
-            # if workspace:
-            #     return redirect(
-            #         "workspace-dashboard",
-            #         workspace_slug=workspace.slug
-            #     )
-            # else:
-            #     return redirect("register") 
+           
+            if workspace:
+                return redirect(
+                    "workspace-dashboard",
+                    workspace_slug=workspace.slug
+                )
+            else:
+                return redirect("home") 
 
     else:
         form = AuthenticationForm()

@@ -23,8 +23,7 @@ def home(request):
             workspace_slug=membership.workspace.slug
         )
 
-    workspace = request.workspace 
-    # Workspace.objects.filter(owner=request.user)
+    workspace = Workspace.objects.filter(owner=request.user).first()
 
     if request.method == "POST":
         form = WorkspaceMemberForm(request.POST)
@@ -37,7 +36,7 @@ def home(request):
 
             return redirect(
                 "workspace-dashboard",
-                workspace_slug=workspace.slug
+                workspace.slug
             )
     else:
         form = WorkspaceMemberForm()
@@ -46,6 +45,9 @@ def home(request):
         "workspace": workspace,
         "form": form
     })
+
+from django.core.exceptions import PermissionDenied
+
 @login_required
 def workspace_dashboard(request, workspace_slug):
     workspace = request.workspace
@@ -53,7 +55,15 @@ def workspace_dashboard(request, workspace_slug):
     projects = Project.objects.filter(workspace=workspace)
     tasks = Task.objects.for_workspace(workspace)
     is_owner = workspace.owner == request.user
+    # workspace = get_object_or_404(
+    #     Workspace,
+    #     slug=workspace_slug,
+    #     members=request.user
+    # )
 
+    # if request.user not in workspace.members.all():
+    #     raise PermissionDenied
+        
     context = {
         "workspace": workspace,
         "projects": projects,
