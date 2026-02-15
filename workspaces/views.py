@@ -164,7 +164,7 @@ def task_detail(request, workspace_slug, pk):
 @login_required
 def task_create(request, workspace_slug):
     workspace = request.workspace
-
+    # if request.workspace.slug ==workspace_slug:
     if request.method == "POST":
         form = TaskForm(request.POST, workspace=workspace)
         if form.is_valid():
