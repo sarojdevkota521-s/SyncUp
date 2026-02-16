@@ -11,40 +11,40 @@ from .models import Workspace
 # Create your views here.
 
 
-def home(request):
+# def home(request):
 
-    membership = WorkspaceMember.objects.filter(
-        user=request.user
-    ).first()
+#     membership = WorkspaceMember.objects.filter(
+#         user=request.user
+#     ).first()
 
-    if membership:
-        return redirect(
-            "workspace-dashboard",
-            workspace_slug=membership.workspace.slug
-        )
+#     if membership:
+#         return redirect(
+#             "workspace-dashboard",
+#             workspace_slug=membership.workspace.slug
+#         )
+    
+#     workspace = Workspace.objects.filter(owner=request.user).first()
 
-    workspace = Workspace.objects.filter(owner=request.user).first()
+#     if request.method == "POST":
+#         form = WorkspaceMemberForm(request.POST)
 
-    if request.method == "POST":
-        form = WorkspaceMemberForm(request.POST)
+#         if form.is_valid():
+#             member = form.save(commit=False)
+#             member.workspace = workspace
+#             member.user = request.user
+#             member.save()
 
-        if form.is_valid():
-            member = form.save(commit=False)
-            member.workspace = workspace
-            member.user = request.user
-            member.save()
+#             return redirect(
+#                 "workspace-dashboard",
+#                 workspace.slug
+#             )
+#     else:
+#         form = WorkspaceMemberForm()
 
-            return redirect(
-                "workspace-dashboard",
-                workspace.slug
-            )
-    else:
-        form = WorkspaceMemberForm()
-
-    return render(request, "home.html", {
-        "workspace": workspace,
-        "form": form
-    })
+#     return render(request, "home.html", {
+#         "workspace": workspace,
+#         "form": form
+#     })
 
 from django.core.exceptions import PermissionDenied
 
@@ -54,12 +54,12 @@ def workspace_dashboard(request, workspace_slug):
 
     projects = Project.objects.filter(workspace=workspace)
     tasks = Task.objects.for_workspace(workspace)
-    is_owner = workspace.owner == request.user
-    # workspace = get_object_or_404(
-    #     Workspace,
-    #     slug=workspace_slug,
-    #     members=request.user
-    # )
+    
+    workspace = get_object_or_404(
+        Workspace,
+        slug=workspace_slug,
+        members=request.user
+    )
 
     # if request.user not in workspace.members.all():
     #     raise PermissionDenied
@@ -68,7 +68,7 @@ def workspace_dashboard(request, workspace_slug):
         "workspace": workspace,
         "projects": projects,
         "tasks": tasks,
-        "is_owner":is_owner
+        
     }
 
     return render(request, "workspaces/dashboard.html", context)

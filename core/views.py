@@ -46,13 +46,12 @@ def login_view(request):
                 owner=request.user
             ).first()
            
-            if workspace:
-                return redirect(
+            
+            return redirect(
                     "workspace-dashboard",
                     workspace_slug=workspace.slug
                 )
-            else:
-                return redirect("home") 
+            
 
     else:
         form = AuthenticationForm()
