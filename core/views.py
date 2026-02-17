@@ -9,6 +9,16 @@ from workspaces.models import Workspace
 from django.utils.text import slugify
 
 # Create your views here.
+def _build_unique_workspace_slug(username):
+    base_slug = slugify(username) or "workspace"
+    slug = base_slug
+    suffix = 1
+
+    while Workspace.objects.filter(slug=slug).exists():
+        suffix += 1
+        slug = f"{base_slug}-{suffix}"
+
+    return slug
 
 def register_view(request):
     if request.method == "POST":
@@ -17,18 +27,15 @@ def register_view(request):
             user = form.save()
             login(request, user)
 
-            workspace_name = f"{user.username}'s Workspace"
-            workspace_slug = slugify(user.username)
-
             workspace = Workspace.objects.create(
-                name=workspace_name,
-                slug=workspace_slug,
+                 name=f"{user.username}'s Workspace",
+                slug=_build_unique_workspace_slug(user.username),
                 owner=user,
             )
 
             workspace.members.add(user)
 
-            return redirect("login")
+            return redirect("workspace-dashboard", workspace_slug=workspace.slug)
     else:
         form = RegisterForm()
 
@@ -42,16 +49,10 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
 
-            workspace = Workspace.objects.filter(
-                owner=request.user
-            ).first()
-           
-            
-            return redirect(
-                    "workspace-dashboard",
-                    workspace_slug=workspace.slug
-                )
-            
+            workspace = Workspace.objects.filter(members=user).order_by("id").first()
+            if workspace:
+                return redirect("workspace-dashboard", workspace_slug=workspace.slug)
+            return redirect("logout")
 
     else:
         form = AuthenticationForm()

@@ -3,66 +3,31 @@ from django.shortcuts import render,redirect
 from projects.models import Project
 from tasks.models import Task
 from django.http import HttpResponseForbidden
-from workspaces.models import WorkspaceMember
+from workspaces.models import WorkspaceMember, Workspace
+from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import redirect, render
+from django.utils.text import slugify
 
 from .forms import TaskForm , WorkspaceMemberForm
 from .models import Workspace
 
-# Create your views here.
-
-
-# def home(request):
-
-#     membership = WorkspaceMember.objects.filter(
-#         user=request.user
-#     ).first()
-
-#     if membership:
-#         return redirect(
-#             "workspace-dashboard",
-#             workspace_slug=membership.workspace.slug
-#         )
-    
-#     workspace = Workspace.objects.filter(owner=request.user).first()
-
-#     if request.method == "POST":
-#         form = WorkspaceMemberForm(request.POST)
-
-#         if form.is_valid():
-#             member = form.save(commit=False)
-#             member.workspace = workspace
-#             member.user = request.user
-#             member.save()
-
-#             return redirect(
-#                 "workspace-dashboard",
-#                 workspace.slug
-#             )
-#     else:
-#         form = WorkspaceMemberForm()
-
-#     return render(request, "home.html", {
-#         "workspace": workspace,
-#         "form": form
-#     })
 
 from django.core.exceptions import PermissionDenied
-
+def get_workspace_for_user(user, workspace_slug):
+    return get_object_or_404(
+        Workspace,
+        slug=workspace_slug,
+        members=user,
+    )
 @login_required
 def workspace_dashboard(request, workspace_slug):
-    workspace = request.workspace
+    workspace = get_workspace_for_user(request.user, workspace_slug)
 
     projects = Project.objects.filter(workspace=workspace)
     tasks = Task.objects.for_workspace(workspace)
     
-    workspace = get_object_or_404(
-        Workspace,
-        slug=workspace_slug,
-        members=request.user
-    )
-
-    # if request.user not in workspace.members.all():
-    #     raise PermissionDenied
+    
         
     context = {
         "workspace": workspace,
@@ -75,8 +40,7 @@ def workspace_dashboard(request, workspace_slug):
 
 @login_required
 def project_list(request, workspace_slug):
-    workspace = request.workspace
-
+    workspace = get_workspace_for_user(request.user, workspace_slug)
     projects = Project.objects.filter(workspace=workspace)
 
     return render(
@@ -84,28 +48,20 @@ def project_list(request, workspace_slug):
         "projects/project_list.html",
         {
             "workspace": workspace,
-            "projects": projects
-        }
+            "projects": projects,
+        },
     )
-
-
-def check_workspace_membership(user, workspace):
-    return WorkspaceMember.objects.filter(
-        user=user,
-        workspace=workspace
-    ).exists()
 from projects.forms import ProjectForm
 @login_required
 def project_create(request, workspace_slug):
-    workspace = request.workspace
+    workspace = get_workspace_for_user(request.user, workspace_slug)
 
     if request.method == "POST":
-        form = ProjectForm(request.POST, workspace=workspace)
+        form = ProjectForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.workspace = workspace
-            
-            task.save()
+            project = form.save(commit=False)
+            project.workspace = workspace
+            project.save()
             return redirect("project-list", workspace_slug=workspace.slug)
     else:
         form = ProjectForm()
@@ -122,10 +78,7 @@ def project_create(request, workspace_slug):
 
 @login_required
 def task_list(request, workspace_slug):
-    workspace = request.workspace
-
-    if not check_workspace_membership(request.user, workspace):
-        return HttpResponseForbidden("Access denied")
+    workspace = get_workspace_for_user(request.user, workspace_slug)
 
     tasks = Task.objects.for_workspace(workspace)
 
@@ -142,8 +95,7 @@ from django.shortcuts import get_object_or_404
 
 @login_required
 def task_detail(request, workspace_slug, pk):
-    workspace = request.workspace
-
+    workspace = get_workspace_for_user(request.user, workspace_slug)
     task = get_object_or_404(
         Task,
         id=pk,
@@ -163,8 +115,7 @@ def task_detail(request, workspace_slug, pk):
 
 @login_required
 def task_create(request, workspace_slug):
-    workspace = request.workspace
-    # if request.workspace.slug ==workspace_slug:
+    workspace = get_workspace_for_user(request.user, workspace_slug)
     if request.method == "POST":
         form = TaskForm(request.POST, workspace=workspace)
         if form.is_valid():
